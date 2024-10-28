@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Default extension cache detection</title>
+  <style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        min-width: 100vw;
+        min-height: 80vh;
+        background-color: #141415;
+        color: #fafafa;
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
+        padding: 0 20px;
+        font-family: system-ui;
+        line-height: 150%;
+        display: flex;
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+        max-width: 60%;
+    }
+
+    @media (max-width:800px) {
+        .container {
+            max-width: 100%;
+        }
+    }
+
+    h1 {
+      color: #ff5d22;
+      text-align: center;
+      line-height: 150%;
+    }
+
+    p {
+      text-align: center;
+      font-size: 24px;
+    }
+
+    p.disclaimer {
+      text-align: center;
+      color: #434344;
+    }
+
+    svg {
+      height: 63px;
+      margin: 1.2rem auto auto;
+      display: block;
+    }
+
+    footer {
+      padding-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    a {
+      display: inline-block;
+      margin: 0px 20px;
+      color: #434344;
+      text-decoration: none;
+      border-bottom: 1px solid #434344;
+      padding: 2px 0px;
+    }
+
+    span.colored {
+      color: #ff5d22;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Chrome Extension Cache Demo</h1>
+    <p id="demo">
+      Your browser ID:
+      <span class="colored" id="deviceId"></span>
+    </p>
+    <div id="extensions">
+      
+    </div>  
+  </div>
+</body>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script type="text/javascript">
+
+  extensions = {
+    "Adobe PDF": "efaidnbmnnnibpcajpcglclefindmkaj/viewer.html",
+    "Adblock": "gighmmpiobklfepjocnamgkkbiglidom/adblock-uiscripts-adblock-wizard.css",
+    "Grammarly": "kbfnbcaeplbcioakkpcpgfkobkghlhen/src/gOS-sandbox.html",
+    "Google Translate": "aapbdbdomjkkjkaonfhkkikfgjllcleb/popup_css_compiled.css",
+    "Cisco Webex": "jlhmfgmfgeifomenelglieieghnjghma/cwcsf-nativemsg-iframe-43c85c0d-d633-af5e-c056-32dc7efc570b.html",
+    "Google Docs Offline": "ghbmnnjooekpmoecnnnilnnbdlolhkhi/page_embed_script.js",
+    "1Password": "aeblfdkhhhdcdjpifhhbdiojplfjncoa/inline/save-dialog/save-dialog.html",
+    "Opera Default Installed Extension": "enegjkbbakeegngfapepobipndnebkdk/history-tags.json"
+  }
+
+  found = {}
+  allExists = "";
+
+  function main(){
+    for (extension in extensions){
+      getLastModified(extension, extensions[extension])
+    }
+  }
+
+  function getLastModified(extension, extensionUrl){
+    fetch("chrome-extension://" + extensionUrl, {method: 'HEAD'}).then(resp=>{
+        header = resp.headers.get("last-modified")
+        allExists += header
+        found[extension] = header
+        document.getElementById("deviceId").innerHTML = CryptoJS.MD5(allExists).toString()
+
+        var child = document.createElement('span');
+        child.innerHTML = `* Installed/updated <span class='colored'>${extension}</span> at <span class='colored'>${header}</span><br>`
+        document.getElementById("extensions").append(child)
+        document.close()
+    })
+  }
+
+  var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
+
+  if(isChrome){
+    main()
+  } else {
+    document.getElementById("demo").innerHTML = "This demo works only on Google Chrome."
+  }
+
+</script>
+
+</html>
