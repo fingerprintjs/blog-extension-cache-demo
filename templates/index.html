@@ -113,13 +113,16 @@
 
   found = {}
   allExists = "";
+  demoElement = document.getElementById("demo")
 
+  // Loop over each extension
   function main(){
     for (extension in extensions){
       getLastModified(extension, extensions[extension])
     }
   }
 
+  // Try to send a request to each extension and get the response headers
   function getLastModified(extension, extensionUrl){
     fetch("chrome-extension://" + extensionUrl, {method: 'HEAD'}).then(resp=>{
         header = resp.headers.get("last-modified")
@@ -131,15 +134,26 @@
         child.innerHTML = `* Installed/updated <span class='colored'>${extension}</span> at <span class='colored'>${header}</span><br>`
         document.getElementById("extensions").append(child)
         document.close()
+
     })
   }
 
-  var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
+  // Check if the browser is a mobile browser
+  function isMobile() {
+    return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  }
 
-  if(isChrome){
+  // Check if the browser is a chrome browser
+  function isChrome() {
+    return /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
+
+  }
+
+  // If the browser is chrome and is not mobile, allow the demo to run
+  if (isChrome() && !isMobile()) {
     main()
   } else {
-    document.getElementById("demo").innerHTML = "This demo works only on Google Chrome."
+    demoElement.innerHTML = "This demo works only on Google Chrome on desktop devices."
   }
 
 </script>
