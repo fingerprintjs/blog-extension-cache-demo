@@ -115,16 +115,24 @@
   allExists = "";
   demoElement = document.getElementById("demo")
 
-  // Loop over each extension
+  // Loop over each extension and make the request
   function main(){
-    for (extension in extensions){
-      getLastModified(extension, extensions[extension])
+    let promises = [];
+
+    for (let extension in extensions){
+      promises.push(getLastModified(extension, extensions[extension]));
     }
+
+    Promise.all(promises).then(() => {
+      if (Object.keys(found).length === 0) {
+        document.getElementById("demo").innerHTML = "No vulnerable extensions found.";
+      }
+    });
   }
 
   // Try to send a request to each extension and get the response headers
   function getLastModified(extension, extensionUrl){
-    fetch("chrome-extension://" + extensionUrl, {method: 'HEAD'}).then(resp=>{
+    return fetch("chrome-extension://" + extensionUrl, {method: 'HEAD'}).then(resp=>{
         header = resp.headers.get("last-modified")
         allExists += header
         found[extension] = header
@@ -135,7 +143,7 @@
         document.getElementById("extensions").append(child)
         document.close()
 
-    })
+    }).catch(() => {});
   }
 
   // Check if the browser is a mobile browser
@@ -153,7 +161,7 @@
   if (isChrome() && !isMobile()) {
     main()
   } else {
-    demoElement.innerHTML = "This demo works only on Google Chrome on desktop devices."
+    demoElement.innerHTML = "This demo only works on Google Chrome desktop browsers."
   }
 
 </script>
