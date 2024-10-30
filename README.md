@@ -7,7 +7,7 @@ The demo demonstrates how any website can easily obtain a uniqnue visitor identi
 
 The demo works only on Google Chrome Desktop mode and does not work on Incognito.
 
-[Read our article](https://insert_here_later) for more information.
+[Read our article](https://fingerprint.com/blog/exploiting-leaked-timestamps-google-chrome-extensions) for more information.
 
 ## Quick start
 Make sure you have Python isntalled. If you do not have it installed, you can install it from the offical Python [website](https://www.python.org/downloads/).
